@@ -240,7 +240,7 @@ public partial class ProfilesView : ReactiveUserControl<ProfilesViewModel>
         }
         else
         {
-            ViewModel?.EditServerAsync(EConfigType.Custom);
+            ViewModel?.EditServerAsync();
         }
     }
 
@@ -281,7 +281,7 @@ public partial class ProfilesView : ReactiveUserControl<ProfilesViewModel>
                     break;
 
                 case Key.D:
-                    ViewModel?.EditServerAsync(EConfigType.Custom);
+                    ViewModel?.EditServerAsync();
                     break;
 
                 case Key.F:

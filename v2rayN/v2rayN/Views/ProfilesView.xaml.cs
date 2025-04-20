@@ -223,7 +223,7 @@ public partial class ProfilesView
         }
         else
         {
-            ViewModel?.EditServerAsync(EConfigType.Custom);
+            ViewModel?.EditServerAsync();
         }
     }
 
@@ -259,7 +259,7 @@ public partial class ProfilesView
                     break;
 
                 case Key.D:
-                    ViewModel?.EditServerAsync(EConfigType.Custom);
+                    ViewModel?.EditServerAsync();
                     break;
 
                 case Key.F:
@@ -267,19 +267,19 @@ public partial class ProfilesView
                     break;
 
                 case Key.O:
-                    ViewModel?.ServerSpeedtest(ESpeedActionType.Tcping);
+                    ViewModel?.ServerSpeedtest(ESpeedActionType.Tcping, false);
                     break;
 
                 case Key.R:
-                    ViewModel?.ServerSpeedtest(ESpeedActionType.Realping);
+                    ViewModel?.ServerSpeedtest(ESpeedActionType.Realping, false);
                     break;
 
                 case Key.T:
-                    ViewModel?.ServerSpeedtest(ESpeedActionType.Speedtest);
+                    ViewModel?.ServerSpeedtest(ESpeedActionType.Speedtest, false);
                     break;
 
                 case Key.E:
-                    ViewModel?.ServerSpeedtest(ESpeedActionType.Mixedtest);
+                    ViewModel?.ServerSpeedtest(ESpeedActionType.Mixedtest, false);
                     break;
             }
         }

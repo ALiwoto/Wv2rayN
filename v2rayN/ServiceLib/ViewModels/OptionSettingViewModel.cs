@@ -54,6 +54,7 @@ public class OptionSettingViewModel : MyReactiveObject
     [Reactive] public bool EnableUpdateSubOnlyRemarksExist { get; set; }
     [Reactive] public bool EnableSecurityProtocolTls13 { get; set; }
     [Reactive] public bool AutoHideStartup { get; set; }
+    [Reactive] public bool AutoSpeedTest { get; set; }
     [Reactive] public bool Hide2TrayWhenClose { get; set; }
     [Reactive] public bool EnableDragDropSort { get; set; }
     [Reactive] public bool DoubleClick2Activate { get; set; }
@@ -171,6 +172,7 @@ public class OptionSettingViewModel : MyReactiveObject
         EnableUpdateSubOnlyRemarksExist = _config.UiItem.EnableUpdateSubOnlyRemarksExist;
         EnableSecurityProtocolTls13 = _config.GuiItem.EnableSecurityProtocolTls13;
         AutoHideStartup = _config.UiItem.AutoHideStartup;
+        AutoSpeedTest = _config.UiItem.AutoSpeedTest;
         Hide2TrayWhenClose = _config.UiItem.Hide2TrayWhenClose;
         EnableDragDropSort = _config.UiItem.EnableDragDropSort;
         DoubleClick2Activate = _config.UiItem.DoubleClick2Activate;
@@ -330,6 +332,7 @@ public class OptionSettingViewModel : MyReactiveObject
         _config.UiItem.EnableUpdateSubOnlyRemarksExist = EnableUpdateSubOnlyRemarksExist;
         _config.GuiItem.EnableSecurityProtocolTls13 = EnableSecurityProtocolTls13;
         _config.UiItem.AutoHideStartup = AutoHideStartup;
+        _config.UiItem.AutoSpeedTest = AutoSpeedTest;
         _config.UiItem.Hide2TrayWhenClose = Hide2TrayWhenClose;
         _config.GuiItem.AutoUpdateInterval = AutoUpdateInterval;
         _config.UiItem.EnableDragDropSort = EnableDragDropSort;

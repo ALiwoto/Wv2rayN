@@ -15,20 +15,17 @@ public class ProfilesViewModel : MyReactiveObject
 
     private List<ProfileItem> _lstProfile;
     private string _serverFilter = string.Empty;
-    private Dictionary<string, bool> _dicHeaderSort = new();
+    private readonly Dictionary<string, bool> _dicHeaderSort = new();
     private SpeedtestService? _speedtestService;
 
     #endregion private prop
 
     #region ObservableCollection
 
-    private IObservableCollection<ProfileItemModel> _profileItems = new ObservableCollectionExtended<ProfileItemModel>();
-    public IObservableCollection<ProfileItemModel> ProfileItems => _profileItems;
-
-    private IObservableCollection<SubItem> _subItems = new ObservableCollectionExtended<SubItem>();
-    public IObservableCollection<SubItem> SubItems => _subItems;
-
-    private IObservableCollection<ComboItem> _servers = new ObservableCollectionExtended<ComboItem>();
+    public IObservableCollection<ProfileItemModel> ProfileItems { get; } =
+        new ObservableCollectionExtended<ProfileItemModel>();
+    public IObservableCollection<SubItem> SubItems { get; } =
+        new ObservableCollectionExtended<SubItem>();
 
     [Reactive]
     public ProfileItemModel SelectedProfile { get; set; }
@@ -126,124 +123,80 @@ public class ProfilesViewModel : MyReactiveObject
         this.WhenAnyValue(
           x => x.ServerFilter,
           y => y != null && _serverFilter != y)
-              .Subscribe(c => ServerFilterChanged(c));
+              .Subscribe(ServerFilterChanged);
 
         //servers delete
-        EditServerCmd = ReactiveCommand.CreateFromTask(async () =>
-        {
-            await EditServerAsync(EConfigType.Custom);
-        }, canEditRemove);
-        RemoveServerCmd = ReactiveCommand.CreateFromTask(async () =>
-        {
-            await RemoveServerAsync();
-        }, canEditRemove);
-        RemoveDuplicateServerCmd = ReactiveCommand.CreateFromTask(async () =>
-        {
-            await RemoveDuplicateServer();
-        });
-        CopyServerCmd = ReactiveCommand.CreateFromTask(async () =>
-        {
-            await CopyServer();
-        }, canEditRemove);
-        SetDefaultServerCmd = ReactiveCommand.CreateFromTask(async () =>
-        {
-            await SetDefaultServer();
-        }, canEditRemove);
-        ShareServerCmd = ReactiveCommand.CreateFromTask(async () =>
-        {
-            await ShareServerAsync();
-        }, canEditRemove);
+        EditServerCmd = ReactiveCommand.CreateFromTask(EditServerAsync, canEditRemove);
+        RemoveServerCmd = ReactiveCommand.CreateFromTask(RemoveServerAsync, canEditRemove);
+        RemoveDuplicateServerCmd = ReactiveCommand.CreateFromTask(RemoveDuplicateServer);
+        CopyServerCmd = ReactiveCommand.CreateFromTask(CopyServer, canEditRemove);
+        SetDefaultServerCmd = ReactiveCommand.CreateFromTask(SetDefaultServer, canEditRemove);
+        ShareServerCmd = ReactiveCommand.CreateFromTask(ShareServerAsync, canEditRemove);
+
         SetDefaultMultipleServerXrayRandomCmd = ReactiveCommand.CreateFromTask(async () =>
-        {
-            await SetDefaultMultipleServer(ECoreType.Xray, EMultipleLoad.Random);
-        }, canEditRemove);
+            await SetDefaultMultipleServer(ECoreType.Xray, EMultipleLoad.Random), canEditRemove);
+
         SetDefaultMultipleServerXrayRoundRobinCmd = ReactiveCommand.CreateFromTask(async () =>
-        {
-            await SetDefaultMultipleServer(ECoreType.Xray, EMultipleLoad.RoundRobin);
-        }, canEditRemove);
+            await SetDefaultMultipleServer(ECoreType.Xray, EMultipleLoad.RoundRobin), canEditRemove);
+
         SetDefaultMultipleServerXrayLeastPingCmd = ReactiveCommand.CreateFromTask(async () =>
-        {
-            await SetDefaultMultipleServer(ECoreType.Xray, EMultipleLoad.LeastPing);
-        }, canEditRemove);
+            await SetDefaultMultipleServer(ECoreType.Xray, EMultipleLoad.LeastPing), canEditRemove);
+
         SetDefaultMultipleServerXrayLeastLoadCmd = ReactiveCommand.CreateFromTask(async () =>
-        {
-            await SetDefaultMultipleServer(ECoreType.Xray, EMultipleLoad.LeastLoad);
-        }, canEditRemove);
+        await SetDefaultMultipleServer(ECoreType.Xray, EMultipleLoad.LeastLoad), canEditRemove);
+
         SetDefaultMultipleServerSingBoxLeastPingCmd = ReactiveCommand.CreateFromTask(async () =>
-        {
-            await SetDefaultMultipleServer(ECoreType.sing_box, EMultipleLoad.LeastPing);
-        }, canEditRemove);
+            await SetDefaultMultipleServer(ECoreType.sing_box, EMultipleLoad.LeastPing), canEditRemove);
 
         //servers move
         MoveTopCmd = ReactiveCommand.CreateFromTask(async () =>
-        {
-            await MoveServer(EMove.Top);
-        }, canEditRemove);
+            await MoveServer(EMove.Top), canEditRemove);
         MoveUpCmd = ReactiveCommand.CreateFromTask(async () =>
-        {
-            await MoveServer(EMove.Up);
-        }, canEditRemove);
+            await MoveServer(EMove.Up), canEditRemove);
+
         MoveDownCmd = ReactiveCommand.CreateFromTask(async () =>
-        {
-            await MoveServer(EMove.Down);
-        }, canEditRemove);
+            await MoveServer(EMove.Down), canEditRemove);
+
         MoveBottomCmd = ReactiveCommand.CreateFromTask(async () =>
-        {
-            await MoveServer(EMove.Bottom);
-        }, canEditRemove);
+            await MoveServer(EMove.Bottom), canEditRemove);
 
         //servers ping
         MixedTestServerCmd = ReactiveCommand.CreateFromTask(async () =>
-        {
-            await ServerSpeedtest(ESpeedActionType.Mixedtest);
-        });
+            await ServerSpeedtest(ESpeedActionType.Mixedtest));
+
         TcpingServerCmd = ReactiveCommand.CreateFromTask(async () =>
-        {
-            await ServerSpeedtest(ESpeedActionType.Tcping);
-        }, canEditRemove);
+            await ServerSpeedtest(ESpeedActionType.Tcping), canEditRemove);
+
         RealPingServerCmd = ReactiveCommand.CreateFromTask(async () =>
-        {
-            await ServerSpeedtest(ESpeedActionType.Realping);
-        }, canEditRemove);
+            await ServerSpeedtest(ESpeedActionType.Realping), canEditRemove);
+
         SpeedServerCmd = ReactiveCommand.CreateFromTask(async () =>
-        {
-            await ServerSpeedtest(ESpeedActionType.Speedtest);
-        }, canEditRemove);
+            await ServerSpeedtest(ESpeedActionType.Speedtest), canEditRemove);
+
         SortServerResultCmd = ReactiveCommand.CreateFromTask(async () =>
-        {
-            await SortServer(EServerColName.DelayVal.ToString());
-        });
-        RemoveInvalidServerResultCmd = ReactiveCommand.CreateFromTask(async () =>
-        {
-            await RemoveInvalidServerResult();
-        });
+            await SortServer(EServerColName.DelayVal.ToString()));
+
+        RemoveInvalidServerResultCmd = ReactiveCommand.CreateFromTask(RemoveInvalidServerResult);
+
         //servers export
         Export2ClientConfigCmd = ReactiveCommand.CreateFromTask(async () =>
-        {
-            await Export2ClientConfigAsync(false);
-        }, canEditRemove);
+            await Export2ClientConfigAsync(false), canEditRemove);
+
         Export2ClientConfigClipboardCmd = ReactiveCommand.CreateFromTask(async () =>
-        {
-            await Export2ClientConfigAsync(true);
-        }, canEditRemove);
+            await Export2ClientConfigAsync(true), canEditRemove);
+
         Export2ShareUrlCmd = ReactiveCommand.CreateFromTask(async () =>
-        {
-            await Export2ShareUrlAsync(false);
-        }, canEditRemove);
+            await Export2ShareUrlAsync(false), canEditRemove);
+
         Export2ShareUrlBase64Cmd = ReactiveCommand.CreateFromTask(async () =>
-        {
-            await Export2ShareUrlAsync(true);
-        }, canEditRemove);
+            await Export2ShareUrlAsync(true), canEditRemove);
 
         //Subscription
         AddSubCmd = ReactiveCommand.CreateFromTask(async () =>
-        {
-            await EditSubAsync(true);
-        });
+            await EditSubAsync(true));
+
         EditSubCmd = ReactiveCommand.CreateFromTask(async () =>
-        {
-            await EditSubAsync(false);
-        });
+            await EditSubAsync(false));
 
         #endregion WhenAnyValue && ReactiveCommand
 
@@ -288,7 +241,7 @@ public class ProfilesViewModel : MyReactiveObject
             NoticeHandler.Instance.Enqueue(result.Delay);
             return;
         }
-        var item = _profileItems.FirstOrDefault(it => it.IndexId == result.IndexId);
+        var item = ProfileItems.FirstOrDefault(it => it.IndexId == result.IndexId);
         if (item == null)
         {
             return;
@@ -304,14 +257,14 @@ public class ProfilesViewModel : MyReactiveObject
         {
             item.SpeedVal = result.Speed ?? string.Empty;
         }
-        _profileItems.Replace(item, JsonUtils.DeepCopy(item));
+        ProfileItems.Replace(item, JsonUtils.DeepCopy(item));
     }
 
     public void UpdateStatistics(ServerSpeedItem update)
     {
         try
         {
-            var item = _profileItems.FirstOrDefault(it => it.IndexId == update.IndexId);
+            var item = ProfileItems.FirstOrDefault(it => it.IndexId == update.IndexId);
             if (item != null)
             {
                 item.TodayDown = Utils.HumanFy(update.TodayDown);
@@ -322,12 +275,12 @@ public class ProfilesViewModel : MyReactiveObject
                 if (SelectedProfile?.IndexId == item.IndexId)
                 {
                     var temp = JsonUtils.DeepCopy(item);
-                    _profileItems.Replace(item, temp);
+                    ProfileItems.Replace(item, temp);
                     SelectedProfile = temp;
                 }
                 else
                 {
-                    _profileItems.Replace(item, JsonUtils.DeepCopy(item));
+                    ProfileItems.Replace(item, JsonUtils.DeepCopy(item));
                 }
             }
         }
@@ -381,8 +334,8 @@ public class ProfilesViewModel : MyReactiveObject
         var lstModel = await GetProfileItemsEx(_config.SubIndexId, _serverFilter);
         _lstProfile = JsonUtils.Deserialize<List<ProfileItem>>(JsonUtils.Serialize(lstModel)) ?? [];
 
-        _profileItems.Clear();
-        _profileItems.AddRange(lstModel);
+        ProfileItems.Clear();
+        ProfileItems.AddRange(lstModel);
         if (lstModel.Count > 0)
         {
             var selected = lstModel.FirstOrDefault(t => t.IndexId == _config.IndexId);
@@ -399,27 +352,27 @@ public class ProfilesViewModel : MyReactiveObject
 
     public async Task RefreshSubscriptions()
     {
-        _subItems.Clear();
+        SubItems.Clear();
 
-        _subItems.Add(new SubItem { Remarks = ResUI.AllGroupServers });
+        SubItems.Add(new SubItem { Remarks = ResUI.AllGroupServers });
 
         foreach (var item in await AppHandler.Instance.SubItems())
         {
-            _subItems.Add(item);
+            SubItems.Add(item);
         }
-        if (_config.SubIndexId != null && _subItems.FirstOrDefault(t => t.Id == _config.SubIndexId) != null)
+        if (_config.SubIndexId != null && SubItems.FirstOrDefault(t => t.Id == _config.SubIndexId) != null)
         {
-            SelectedSub = _subItems.FirstOrDefault(t => t.Id == _config.SubIndexId);
+            SelectedSub = SubItems.FirstOrDefault(t => t.Id == _config.SubIndexId);
         }
         else
         {
-            SelectedSub = _subItems.First();
+            SelectedSub = SubItems.First();
         }
     }
 
-    private async Task<List<ProfileItemModel>?> GetProfileItemsEx(string subid, string filter)
+    private static async Task<List<ProfileItemModel>?> GetProfileItemsEx(string subid, string filter)
     {
-        var lstModel = await AppHandler.Instance.ProfileItems(_config.SubIndexId, filter);
+        var lstModel = await AppHandler.Instance.ProfileItems(subid, filter);
 
         await ConfigHandler.SetDefaultServer(_config, lstModel);
 
@@ -489,7 +442,7 @@ public class ProfilesViewModel : MyReactiveObject
         return lstSelected;
     }
 
-    public async Task EditServerAsync(EConfigType eConfigType)
+    public async Task EditServerAsync()
     {
         if (string.IsNullOrEmpty(SelectedProfile?.IndexId))
         {
@@ -501,7 +454,7 @@ public class ProfilesViewModel : MyReactiveObject
             NoticeHandler.Instance.Enqueue(ResUI.PleaseSelectServer);
             return;
         }
-        eConfigType = item.ConfigType;
+        var eConfigType = item.ConfigType;
 
         bool? ret = false;
         if (eConfigType == EConfigType.Custom)
@@ -537,9 +490,9 @@ public class ProfilesViewModel : MyReactiveObject
 
         await ConfigHandler.RemoveServers(_config, lstSelected);
         NoticeHandler.Instance.Enqueue(ResUI.OperationSuccess);
-        if (lstSelected.Count == _profileItems.Count)
+        if (lstSelected.Count == ProfileItems.Count)
         {
-            _profileItems.Clear();
+            ProfileItems.Clear();
         }
         RefreshServers();
         if (exists)
@@ -669,7 +622,7 @@ public class ProfilesViewModel : MyReactiveObject
         }
 
         _dicHeaderSort.TryAdd(colName, true);
-        _dicHeaderSort.TryGetValue(colName, out bool asc);
+        _dicHeaderSort.TryGetValue(colName, out var asc);
         if (await ConfigHandler.SortServers(_config, _config.SubIndexId, colName, asc) != 0)
         {
             return;
@@ -729,7 +682,7 @@ public class ProfilesViewModel : MyReactiveObject
 
     public async Task MoveServerTo(int startIndex, ProfileItemModel targetItem)
     {
-        var targetIndex = _profileItems.IndexOf(targetItem);
+        var targetIndex = ProfileItems.IndexOf(targetItem);
         if (startIndex >= 0 && targetIndex >= 0 && startIndex != targetIndex)
         {
             if (await ConfigHandler.MoveServer(_config, _lstProfile, startIndex, EMove.Position, targetIndex) == 0)
@@ -739,11 +692,16 @@ public class ProfilesViewModel : MyReactiveObject
         }
     }
 
-    public async Task ServerSpeedtest(ESpeedActionType actionType)
+    public async Task ServerSpeedtest(ESpeedActionType actionType, bool isAutoTest = false)
     {
+        if (!(_config?.UiItem.AutoSpeedTest ?? false) && isAutoTest)
+        {
+            // we are not allowed to do auto speed test.
+            return;
+        }
         if (actionType == ESpeedActionType.Mixedtest)
         {
-            SelectedProfiles = _profileItems;
+            SelectedProfiles = ProfileItems;
         }
         var lstSelected = await GetProfileItems(false);
         if (lstSelected == null)

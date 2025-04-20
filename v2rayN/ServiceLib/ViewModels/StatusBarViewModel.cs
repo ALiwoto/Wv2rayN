@@ -120,7 +120,7 @@ public class StatusBarViewModel : MyReactiveObject
         this.WhenAnyValue(
                 x => x.SelectedServer,
                 y => y != null && !y.Text.IsNullOrEmpty())
-            .Subscribe(c => ServerSelectedChanged(c));
+            .Subscribe(ServerSelectedChanged);
 
         SystemProxySelected = (int)_config.SystemProxyItem.SysProxyType;
         this.WhenAnyValue(
@@ -230,21 +230,27 @@ public class StatusBarViewModel : MyReactiveObject
     {
         var service = Locator.Current.GetService<MainWindowViewModel>();
         if (service != null)
+        {
             await service.AddServerViaClipboardAsync(null);
+        }
     }
 
-    private async Task AddServerViaScan()
+    private static async Task AddServerViaScan()
     {
         var service = Locator.Current.GetService<MainWindowViewModel>();
         if (service != null)
+        {
             await service.AddServerViaScanAsync();
+        }
     }
 
-    private async Task UpdateSubscriptionProcess(bool blProxy)
+    private static async Task UpdateSubscriptionProcess(bool blProxy)
     {
         var service = Locator.Current.GetService<MainWindowViewModel>();
         if (service != null)
+        {
             await service.UpdateSubscriptionProcess("", blProxy);
+        }
     }
 
     public async Task RefreshServersBiz()
@@ -277,10 +283,10 @@ public class StatusBarViewModel : MyReactiveObject
         }
 
         BlServers = true;
-        for (int k = 0; k < lstModel.Count; k++)
+        for (var k = 0; k < lstModel.Count; k++)
         {
             ProfileItem it = lstModel[k];
-            string name = it.GetSummary();
+            var name = it.GetSummary();
 
             var item = new ComboItem() { ID = it.IndexId, Text = name };
             _servers.Add(item);
@@ -310,6 +316,11 @@ public class StatusBarViewModel : MyReactiveObject
 
     public async Task TestServerAvailability()
     {
+        if (!(_config?.UiItem.AutoSpeedTest ?? false))
+        {
+            return;
+        }
+
         var item = await ConfigHandler.GetDefaultServer(_config);
         if (item == null)
         {
@@ -318,10 +329,7 @@ public class StatusBarViewModel : MyReactiveObject
 
         _updateView?.Invoke(EViewAction.DispatcherServerAvailability, ResUI.Speedtesting);
 
-        var msg = await Task.Run(async () =>
-        {
-            return await (new UpdateService()).RunAvailabilityCheck();
-        });
+        var msg = await Task.Run(async () => await new UpdateService().RunAvailabilityCheck());
 
         NoticeHandler.Instance.SendMessageEx(msg);
         _updateView?.Invoke(EViewAction.DispatcherServerAvailability, msg);
@@ -352,10 +360,10 @@ public class StatusBarViewModel : MyReactiveObject
     {
         await SysProxyHandler.UpdateSysProxy(_config, false);
 
-        BlSystemProxyClear = (type == ESysProxyType.ForcedClear);
-        BlSystemProxySet = (type == ESysProxyType.ForcedChange);
-        BlSystemProxyNothing = (type == ESysProxyType.Unchanged);
-        BlSystemProxyPac = (type == ESysProxyType.Pac);
+        BlSystemProxyClear = type == ESysProxyType.ForcedClear;
+        BlSystemProxySet = type == ESysProxyType.ForcedChange;
+        BlSystemProxyNothing = type == ESysProxyType.Unchanged;
+        BlSystemProxyPac = type == ESysProxyType.Pac;
 
         if (blChange)
         {

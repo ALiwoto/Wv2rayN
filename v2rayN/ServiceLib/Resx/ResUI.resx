@@ -1416,4 +1416,7 @@
   <data name="menuExportConfig" xml:space="preserve">
     <value>Export Configuration</value>
   </data>
+  <data name="TbSettingsAutoSpeedTest" xml:space="preserve">
+    <value>Auto speedtest whenever possible</value>
+  </data>
 </root>
